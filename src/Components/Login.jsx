@@ -3,12 +3,16 @@ import { API_BASE_URL } from "../config";
 
 export default function Login() {
   const API = (API_BASE_URL || "").replace(/\/$/, "");
-  useEffect (() => {
-    fetch(`${API}/health`, { cache: "no-store", mode: "cors" }).catch(()=>{});
+  
+  useEffect(() => {
+    fetch(`${API}/health`, { 
+      cache: "no-store", 
+      mode: "cors",
+      credentials: "include" 
+    }).catch(()=>{});
   }, []);
   
   const startGoogleLogin = async () => {
-    // warm the backend so we don't see the wake page
     try {
       await fetch(`${API}/health`, {
         credentials: "include",
@@ -16,10 +20,12 @@ export default function Login() {
         mode: "cors",
         keepalive: true,
       });
-    } catch { /* ignore – we just want to wake it */ }
-
-    // now do the real OAuth redirect
-    window.location.href = `${API}/auth/google`;
+      
+      // Redirect to Google OAuth
+      window.location.href = `${API}/auth/google`;
+    } catch (err) {
+      console.error("Failed to start Google login:", err);
+    }
   };
 
   return (

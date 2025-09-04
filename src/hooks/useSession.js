@@ -11,7 +11,19 @@ export default function useSession() {
     api.get("/auth/session")
       .then(res => {
         if (!alive) return;
-        setUser(res?.data?.user ?? null);
+        // Ensure we're handling the user object correctly
+        const userData = res?.data?.user || null;
+        if (userData) {
+          // Normalize the user object structure
+          setUser({
+            id: userData.id || userData._id,
+            name: userData.name || `${userData.givenName} ${userData.familyName}`,
+            email: userData.email,
+            // Add any other needed fields
+          });
+        } else {
+          setUser(null);
+        }
       })
       .catch(() => {
         if (!alive) return;

@@ -3,11 +3,11 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Menu } from "lucide-react";
 import { Link } from "react-router-dom";
-import TranscriptionCard from "./ReusableComponent/TranscriptionCard"
+import TranscriptionCard from "./ReusableComponent/TranscriptionCard";
 import toast from "react-hot-toast";
-import Navbar from "./ReusableComponent/Navbar"
+import Navbar from "./ReusableComponent/Navbar";
 import { motion } from "framer-motion";
-import { API_BASE_URL } from "../config"; 
+import { API_BASE_URL } from "../config";
 export default function Home() {
   const [file, setFile] = useState(null);
   const [transcription, setTranscription] = useState("");
@@ -20,20 +20,20 @@ export default function Home() {
   const [cost, setCost] = useState(0);
 
   // 1) Fetch logged-in user
-useEffect(() => {
-  axios
-    .get(`${API_BASE_URL}/auth/session`, { withCredentials: true })
-    .then((res) => {
-      if (!res.data?.user) {
+  useEffect(() => {
+    axios
+      .get(`${API_BASE_URL}/auth/session`, { withCredentials: true })
+      .then((res) => {
+        if (!res.data?.user) {
+          window.location.href = "/";
+        } else {
+          setUser(res.data.user);
+        }
+      })
+      .catch(() => {
         window.location.href = "/";
-      } else {
-        setUser(res.data.user);
-      }
-    })
-    .catch(() => {
-      window.location.href = "/";
-    });
-}, []);
+      });
+  }, []);
 
   // 2) After user is set, load history
   useEffect(() => {
@@ -49,13 +49,6 @@ useEffect(() => {
     setFile(selectedFile);
     setDuration(0);
     setCost(0);
-
-
-
-
-
-
-
 
     if (selectedFile) {
       const objectUrl = URL.createObjectURL(selectedFile);
@@ -86,7 +79,7 @@ useEffect(() => {
   };
 
   const handleUpload = async () => {
-   if (!file) return toast.error("⚠️ Please select a file first!");
+    if (!file) return toast.error("⚠️ Please select a file first!");
 
     const formData = new FormData();
     formData.append("file", file); // must match multer field
@@ -105,8 +98,7 @@ useEffect(() => {
 
       // Be tolerant to different response shapes
       const data = res.data || {};
-      const item =
-        data.transcription ?? data.item ?? data.doc ?? data; // pick the doc
+      const item = data.transcription ?? data.item ?? data.doc ?? data; // pick the doc
       const text = item?.transcription ?? item?.text ?? "";
       const minutes =
         typeof item?.duration === "number"
@@ -124,7 +116,7 @@ useEffect(() => {
           : 0;
 
       setTranscription(text);
-      toast.success("✅ Transcription completed!")
+      toast.success("✅ Transcription completed!");
       setDuration(Math.round(minutes * 60)); // store seconds for display
       setCost(rupees);
       setHistory((prev) => [item, ...prev]);
@@ -142,7 +134,7 @@ useEffect(() => {
       {/* <Navbar user={user} setUser={setUser} /> */}
 
       {/* Main Content */}
-       <motion.div layout className="flex flex-1">
+      <motion.div layout className="flex flex-1">
         {/* Sidebar (History) */}
         <aside
           className={`fixed top-0 left-0 h-full w-72 bg-gray-900 border-r border-gray-800 transform ${
@@ -162,23 +154,23 @@ useEffect(() => {
             {history.length === 0 && (
               <p className="text-gray-500">No history yet</p>
             )}
-       {history.map((item, idx) => (
-  <TranscriptionCard
-    key={item._id ?? idx}
-    item={item}
-    onDelete={async (id) => {
-      try {
-        await axios.delete(`${API_BASE_URL}/api/history/${id}`, {
-          withCredentials: true,
-        });
-        setHistory((prev) => prev.filter((h) => h._id !== id));
-      } catch (err) {
-        console.error("Delete failed", err);
-         toast.error("❌ Failed to delete transcription");
-      }
-    }}
-  />
-))}
+            {history.map((item, idx) => (
+              <TranscriptionCard
+                key={item._id ?? idx}
+                item={item}
+                onDelete={async (id) => {
+                  try {
+                    await axios.delete(`${API_BASE_URL}/api/history/${id}`, {
+                      withCredentials: true,
+                    });
+                    setHistory((prev) => prev.filter((h) => h._id !== id));
+                  } catch (err) {
+                    console.error("Delete failed", err);
+                    toast.error("❌ Failed to delete transcription");
+                  }
+                }}
+              />
+            ))}
           </div>
         </aside>
 

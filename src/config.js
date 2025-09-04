@@ -1,4 +1,1 @@
-const API_BASE_URL = "https://speechtotext-backend-reyt.onrender.com";
-
-export { API_BASE_URL };
-
+export const API_BASE_URL = import.meta.env.VITE_API_URL;

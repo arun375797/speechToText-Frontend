@@ -1,8 +1,9 @@
+import { useEffect } from "react";
 import { API_BASE_URL } from "../config";
 
 export default function Login() {
   const API = (API_BASE_URL || "").replace(/\/$/, "");
-  useEffect(() => {
+  useEffect (() => {
     fetch(`${API}/health`, { cache: "no-store", mode: "cors" }).catch(()=>{});
   }, []);
   

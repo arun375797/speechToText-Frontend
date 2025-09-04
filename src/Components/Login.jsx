@@ -1,51 +1,87 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { API_BASE_URL } from "../config";
 
 export default function Login() {
+  const navigate = useNavigate();
   const API = (API_BASE_URL || "").replace(/\/$/, "");
-  
+  const [waking, setWaking] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  // 1) If already logged in, go straight to /home
   useEffect(() => {
-    fetch(`${API}/health`, { 
-      cache: "no-store", 
+    let alive = true;
+
+    axios
+      .get(`${API}/auth/session`, { withCredentials: true })
+      .then((res) => {
+        if (!alive) return;
+        if (res?.data?.user) navigate("/home");
+      })
+      .catch(() => {})
+      .finally(() => alive && setChecking(false));
+
+    // Best-effort warmup
+    setWaking(true);
+    fetch(`${API}/health`, {
+      cache: "no-store",
       mode: "cors",
-      credentials: "include" 
-    }).catch(()=>{});
-  }, []);
-  
-  const startGoogleLogin = async () => {
+      credentials: "include",
+    })
+      .catch(() => {})
+      .finally(() => alive && setWaking(false));
+
+    return () => {
+      alive = false;
+    };
+  }, [API, navigate]);
+
+  // 2) Start Google OAuth
+  const startGoogleLogin = () => {
     try {
-      await fetch(`${API}/health`, {
-        credentials: "include",
-        cache: "no-store",
-        mode: "cors",
-        keepalive: true,
-      });
-      
-      // Redirect to Google OAuth
-      window.location.href = `${API}/auth/google`;
-    } catch (err) {
-      console.error("Failed to start Google login:", err);
-    }
+      // fire-and-forget warmup
+      if (navigator.sendBeacon) navigator.sendBeacon(`${API}/health`);
+    } catch {}
+    window.location.assign(`${API}/auth/google`);
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white">
-      <h1 className="text-4xl font-extrabold mb-6">🎙️ Speech-to-Text App</h1>
-      <p className="mb-10 text-lg opacity-90 text-center max-w-md">
-        Sign in with Google to start uploading and converting your audio to text.
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white px-6">
+      <h1 className="text-4xl font-extrabold mb-3">🎙️ Speech-to-Text App</h1>
+      <p className="mb-8 text-lg opacity-90 text-center max-w-md">
+        Sign in with Google to upload audio and convert it to text.
       </p>
 
       <button
         onClick={startGoogleLogin}
         className="flex items-center px-6 py-3 bg-white text-gray-800 font-semibold rounded-lg shadow-lg hover:bg-gray-200 transition"
+        disabled={checking}
       >
         <img
           src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-          alt="Google logo"
+          alt="Google"
           className="w-6 h-6 mr-3"
         />
-        Sign in with Google
+        {checking ? "Checking session…" : "Sign in with Google"}
       </button>
+
+      {/* Warmup hint + no-JS fallback */}
+      <div className="mt-4 text-sm opacity-90 text-center">
+        {waking && <div>Contacting server…</div>}
+        <noscript>
+          <div className="mt-2">
+            JavaScript is required. Or{" "}
+            <a
+              href={`${API}/auth/google`}
+              className="underline font-semibold text-white"
+            >
+              continue to Google
+            </a>
+            .
+          </div>
+        </noscript>
+      </div>
     </div>
   );
 }

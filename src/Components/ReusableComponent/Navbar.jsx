@@ -2,60 +2,22 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
-import toast from "react-hot-toast";
 
-export default function Navbar({ user: userProp, setUser }) {
+// ✅ use the shared axios instance + base URL
+import api, { API_BASE } from "../../lib/api";
+import useSession from "../../hooks/useSession";
+
+export default function Navbar() {
   const { pathname } = useLocation();
-  const [user, setUserLocal] = useState(userProp ?? null);
-  const [loadingUser, setLoadingUser] = useState(!userProp);
+  const { user, setUser, loading } = useSession();  // fetch session here
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // API base for relative images
-  const API = import.meta?.env?.VITE_API_URL || "http://localhost:5000";
+  // Resolve profile image (absolute URL or backend-relative)
   const srcFrom = (p) => {
     if (!p) return "/default-profile.png";
     if (p.startsWith("http")) return p;
-    return `${API}${p.startsWith("/") ? p : `/${p}`}`;
+    return `${API_BASE}${p.startsWith("/") ? p : `/${p}`}`;
   };
-
-  // Sync if parent passes later
-  useEffect(() => {
-    if (userProp) {
-      setUserLocal(userProp);
-      setLoadingUser(false);
-    }
-  }, [userProp]);
-
-  // Debug user state
-  useEffect(() => {
-    console.log("Current user state:", user);
-  }, [user]);
-
-  // Fetch session if missing
-  useEffect(() => {
-    let isMounted = true;
-    if (!userProp) {
-      axios
-        .get("http://localhost:5000/auth/session", { withCredentials: true })
-        .then((res) => {
-          if (!isMounted) return;
-          const u = res?.data?.user ?? null;
-          setUserLocal(u);
-          setUser?.(u);
-          console.log("Session response:", res.data); // Debug backend response
-        })
-        .catch((err) => {
-          console.error("Session fetch error:", err); // Debug error
-        })
-        .finally(() => {
-          if (isMounted) setLoadingUser(false);
-        });
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, []); // once
 
   const links = [
     { to: "/home", label: "📂 Upload & Transcribe" },
@@ -65,25 +27,21 @@ export default function Navbar({ user: userProp, setUser }) {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:5000/auth/logout", {}, { withCredentials: true });
-      toast.success("Logged out");
-    } catch {
-      toast.error("Logout failed");
+      await api.post("/auth/logout", {});   // ← uses backend base + credentials
+    } catch (_) {
+      // ignore
     } finally {
-      setUserLocal(null);
-      setUser?.(null);
+      setUser(null);
       window.location.href = "/";
     }
   };
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#0f1621]/95 backdrop-blur border-b border-gray-800">
-      {/* container */}
       <div className="mx-auto w-full max-w-8xl px-4 sm:px-6 h-14 md:h-16 flex items-center justify-between relative">
         {/* Left: logo */}
         <div className="flex items-center gap-2">
@@ -91,7 +49,7 @@ export default function Navbar({ user: userProp, setUser }) {
           <span className="text-xl sm:text-2xl font-bold">Speech2Text</span>
         </div>
 
-        {/* Center nav (desktop only) */}
+        {/* Center: nav */}
         <nav className="absolute left-1/2 -translate-x-1/2 hidden md:block">
           <div className="relative inline-flex items-center gap-2 p-1 rounded-xl bg-gray-800/60 ring-1 ring-gray-700">
             {links.map(({ to, label }) => {
@@ -102,24 +60,9 @@ export default function Navbar({ user: userProp, setUser }) {
                     {active && (
                       <motion.div
                         className="absolute inset-0 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600"
-                        initial={{
-                          opacity: 0,
-                          scale: 0.95,
-                          filter: "blur(6px)",
-                          clipPath: "circle(0% at 50% 50%)",
-                        }}
-                        animate={{
-                          opacity: 1,
-                          scale: 1,
-                          filter: "blur(0px)",
-                          clipPath: "circle(120% at 50% 50%)",
-                        }}
-                        exit={{
-                          opacity: 0,
-                          scale: 0.98,
-                          filter: "blur(4px)",
-                          clipPath: "circle(0% at 50% 50%)",
-                        }}
+                        initial={{ opacity: 0, scale: 0.95, filter: "blur(6px)", clipPath: "circle(0% at 50% 50%)" }}
+                        animate={{ opacity: 1, scale: 1, filter: "blur(0)", clipPath: "circle(120% at 50% 50%)" }}
+                        exit={{ opacity: 0, scale: 0.98, filter: "blur(4px)", clipPath: "circle(0% at 50% 50%)" }}
                         transition={{ duration: 0.28, ease: "easeOut" }}
                       />
                     )}
@@ -140,63 +83,59 @@ export default function Navbar({ user: userProp, setUser }) {
           </div>
         </nav>
 
-        {/* Right: desktop user + logout; mobile: hamburger */}
-        <div className="flex items-center gap-3">
-          {/* Desktop user block */}
-          <div className="hidden md:flex items-center gap-5">
-            {loadingUser ? (
-              <div className="h-10 w-28 rounded-md bg-white/5 animate-pulse" />
-            ) : user ? (
-              <>
-                <span className="text-sm text-gray-300 truncate max-w-[160px]">{user.name}</span>
-                <img
-                  src={srcFrom(user?.picture)}
-                  alt="Profile"
-                  className="w-10 h-10 rounded-full border border-gray-600 object-cover"
-                  referrerPolicy="no-referrer"
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = "/default-profile.png";
-                  }}
-                />
-                <button
-                  onClick={handleLogout}
-                  className="px-3 py-1 text-sm font-medium rounded-md bg-red-500/20 text-red-400 hover:bg-red-500/30 hover:text-red-300 transition"
-                >
-                  Logout
-                </button>
-              </>
-            ) : null}
-          </div>
-
-          {/* Mobile: avatar (if any) + hamburger */}
-          <div className="md:hidden flex items-center gap-3">
-            {user && (
+        {/* Right: user + logout (desktop) */}
+        <div className="hidden md:flex items-center gap-5">
+          {loading ? (
+            <div className="h-10 w-28 rounded-md bg-white/5 animate-pulse" />
+          ) : user ? (
+            <>
+              <span className="text-sm text-gray-300 truncate max-w-[160px]">{user.name}</span>
               <img
                 src={srcFrom(user?.picture)}
                 alt="Profile"
-                className="w-9 h-9 rounded-full border border-gray-600 object-cover"
+                className="w-10 h-10 rounded-full border border-gray-600 object-cover"
                 referrerPolicy="no-referrer"
                 onError={(e) => {
                   e.currentTarget.onerror = null;
                   e.currentTarget.src = "/default-profile.png";
                 }}
               />
-            )}
-            <button
-              aria-label="Open menu"
-              onClick={() => setMenuOpen((v) => !v)}
-              className="p-2 rounded-md bg-white/5 hover:bg-white/10 transition"
-            >
-              {/* hamburger icon */}
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" className="text-gray-200" />
-              </svg>
-            </button>
-          </div>
+              <button
+                onClick={handleLogout}
+                className="px-3 py-1 text-sm font-medium rounded-md bg-red-500/20 text-red-400 hover:bg-red-500/30 hover:text-red-300 transition"
+              >
+                Logout
+              </button>
+            </>
+          ) : null}
         </div>
 
-        {/* Mobile menu (slide-down) */}
+        {/* Right: mobile avatar + menu */}
+        <div className="md:hidden flex items-center gap-3">
+          {user && (
+            <img
+              src={srcFrom(user?.picture)}
+              alt="Profile"
+              className="w-9 h-9 rounded-full border border-gray-600 object-cover"
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "/default-profile.png";
+              }}
+            />
+          )}
+          <button
+            aria-label="Open menu"
+            onClick={() => setMenuOpen((v) => !v)}
+            className="p-2 rounded-md bg-white/5 hover:bg-white/10 transition"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" className="text-gray-200" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Mobile slide-down */}
         <AnimatePresence>
           {menuOpen && (
             <motion.div
@@ -227,7 +166,7 @@ export default function Navbar({ user: userProp, setUser }) {
 
                 <div className="h-px bg-white/10 my-2" />
 
-                {loadingUser ? (
+                {loading ? (
                   <div className="h-10 w-28 rounded-md bg-white/5 animate-pulse" />
                 ) : user ? (
                   <div className="flex items-center justify-between gap-3">

@@ -11,15 +11,14 @@ export default function useSession() {
     api.get("/auth/session")
       .then(res => {
         if (!alive) return;
-        // Ensure we're handling the user object correctly
         const userData = res?.data?.user || null;
         if (userData) {
           // Normalize the user object structure
           setUser({
             id: userData.id || userData._id,
-            name: userData.name || `${userData.givenName} ${userData.familyName}`,
+            name: userData.name || `${userData.givenName} ${userData.familyName}`.trim(),
             email: userData.email,
-            // Add any other needed fields
+            picture: userData.picture || userData.avatar,
           });
         } else {
           setUser(null);

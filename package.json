@@ -5,10 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-   "build": "react-scripts build",
-    "lint": "eslint .",
+    "build": "vite build",
     "preview": "vite preview",
-    "start": "react-scripts start"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@react-oauth/google": "^0.12.2",

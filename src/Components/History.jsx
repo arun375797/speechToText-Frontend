@@ -7,9 +7,14 @@ import { Link } from "react-router-dom";
 
 import Navbar from "./ReusableComponent/Navbar";
 import TranscriptionCard from "./ReusableComponent/TranscriptionCard";
+import Modal from "./ReusableComponent/Modal";
+import useModal from "../hooks/useModal";
 import { API_BASE_URL } from "../config";
 
 export default function History() {
+  // modal
+  const { modal, hideModal, showConfirm, showError } = useModal();
+
   // auth/user
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
@@ -69,17 +74,27 @@ export default function History() {
 
   // 3) Delete a transcription
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this transcription?")) return;
-    try {
-      await axios.delete(`${API_BASE_URL}/api/history/${id}`, {
-        withCredentials: true,
-      });
-      setHistory((prev) => prev.filter((item) => item._id !== id));
-      toast.success("Deleted");
-    } catch (err) {
-      console.error("Delete failed:", err);
-      toast.error("Failed to delete transcription");
-    }
+    showConfirm(
+      "Are you sure you want to delete this transcription? This action cannot be undone.",
+      async () => {
+        try {
+          await axios.delete(`${API_BASE_URL}/api/history/${id}`, {
+            withCredentials: true,
+          });
+          setHistory((prev) => prev.filter((item) => item._id !== id));
+          toast.success("✅ Transcription deleted successfully");
+        } catch (err) {
+          console.error("Delete failed:", err);
+          showError("Failed to delete transcription. Please try again.");
+        }
+      },
+      {
+        title: "Delete Transcription",
+        type: "danger",
+        confirmText: "Yes, Delete",
+        cancelText: "Cancel"
+      }
+    );
   };
 
   return (
@@ -104,7 +119,7 @@ export default function History() {
             </p>
             <a
               href={`${API_BASE_URL}/auth/google`}
-              className="inline-block px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 border border-white/10"
+              className="btn-ghost"
             >
               Sign in with Google
             </a>
@@ -134,6 +149,20 @@ export default function History() {
           </>
         )}
       </main>
+
+      {/* Modal */}
+      <Modal
+        isOpen={modal.isOpen}
+        onClose={hideModal}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        confirmText={modal.confirmText}
+        cancelText={modal.cancelText}
+        onConfirm={modal.onConfirm}
+        showCancel={modal.showCancel}
+        showConfirm={modal.showConfirm}
+      />
     </div>
   );
 }

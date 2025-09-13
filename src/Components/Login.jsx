@@ -55,7 +55,7 @@ export default function Login() {
 
       <button
         onClick={startGoogleLogin}
-        className="flex items-center px-6 py-3 bg-white text-gray-800 font-semibold rounded-lg shadow-lg hover:bg-gray-200 transition"
+        className="btn-google"
         disabled={checking}
       >
         <img
@@ -74,7 +74,7 @@ export default function Login() {
             JavaScript is required. Or{" "}
             <a
               href={`${API}/auth/google`}
-              className="underline font-semibold text-white"
+              className="underline font-semibold text-white hover:text-blue-300 transition-colors duration-300"
             >
               continue to Google
             </a>

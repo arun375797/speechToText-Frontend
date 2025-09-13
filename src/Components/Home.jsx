@@ -7,9 +7,14 @@ import toast from "react-hot-toast";
 
 import Navbar from "./ReusableComponent/Navbar";
 import TranscriptionCard from "./ReusableComponent/TranscriptionCard";
+import Modal from "./ReusableComponent/Modal";
+import useModal from "../hooks/useModal";
 import { API_BASE_URL } from "../config";
 
 export default function Home() {
+  // modal
+  const { modal, hideModal, showConfirm, showError } = useModal();
+
   // auth
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
@@ -154,7 +159,7 @@ export default function Home() {
       toast.success("✅ Transcription completed!");
     } catch (err) {
       console.error(err);
-      toast.error("❌ Failed to transcribe audio");
+      showError("Failed to transcribe audio. Please check your file and try again.");
     } finally {
       setLoading(false);
     }
@@ -162,17 +167,27 @@ export default function Home() {
 
   // --- Delete one history item ---
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this transcription?")) return;
-    try {
-      await axios.delete(`${API_BASE_URL}/api/history/${id}`, {
-        withCredentials: true,
-      });
-      setHistory((prev) => prev.filter((h) => h._id !== id));
-      toast.success("Deleted");
-    } catch (err) {
-      console.error("Delete failed", err);
-      toast.error("❌ Failed to delete transcription");
-    }
+    showConfirm(
+      "Are you sure you want to delete this transcription? This action cannot be undone.",
+      async () => {
+        try {
+          await axios.delete(`${API_BASE_URL}/api/history/${id}`, {
+            withCredentials: true,
+          });
+          setHistory((prev) => prev.filter((h) => h._id !== id));
+          toast.success("✅ Transcription deleted successfully");
+        } catch (err) {
+          console.error("Delete failed", err);
+          showError("Failed to delete transcription. Please try again.");
+        }
+      },
+      {
+        title: "Delete Transcription",
+        type: "danger",
+        confirmText: "Yes, Delete",
+        cancelText: "Cancel"
+      }
+    );
   };
 
   return (
@@ -198,7 +213,7 @@ export default function Home() {
               </p>
               <a
                 href={`${API_BASE_URL}/auth/google`}
-                className="inline-block px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 border border-white/10"
+                className="btn-ghost"
               >
                 Sign in with Google
               </a>
@@ -217,7 +232,7 @@ export default function Home() {
                 <h2 className="text-lg font-semibold">📝 History</h2>
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="text-gray-400 hover:text-white"
+                  className="btn-icon"
                 >
                   ✖
                 </button>
@@ -243,7 +258,7 @@ export default function Home() {
             <section className="flex-1 flex flex-col items-center p-6 w-full">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="self-start mb-6 flex items-center space-x-2 bg-gray-800/60 backdrop-blur-sm px-3 py-2 rounded-md border border-gray-700 hover:bg-gray-700/60"
+                className="btn-secondary self-start mb-6 flex items-center space-x-2"
               >
                 <Menu size={18} /> <span>Show History</span>
               </button>
@@ -278,7 +293,7 @@ export default function Home() {
                   type="file"
                   accept="audio/*"
                   onChange={handleFileChange}
-                  className="mb-2 block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-gray-200 hover:file:bg-gray-600 cursor-pointer"
+                  className="btn-file mb-4"
                 />
 
                 {/* Show Duration & Cost */}
@@ -293,7 +308,7 @@ export default function Home() {
                 <button
                   onClick={handleUpload}
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold shadow-md hover:scale-105 transition disabled:opacity-50"
+                  className="btn-primary w-full"
                 >
                   {loading ? "⏳ Transcribing..." : "🚀 Upload & Transcribe"}
                 </button>
@@ -318,6 +333,20 @@ export default function Home() {
           </motion.div>
         )}
       </main>
+
+      {/* Modal */}
+      <Modal
+        isOpen={modal.isOpen}
+        onClose={hideModal}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        confirmText={modal.confirmText}
+        cancelText={modal.cancelText}
+        onConfirm={modal.onConfirm}
+        showCancel={modal.showCancel}
+        showConfirm={modal.showConfirm}
+      />
     </div>
   );
 }

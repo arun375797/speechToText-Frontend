@@ -5,9 +5,14 @@ import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 
 import Navbar from "./ReusableComponent/Navbar";
+import Modal from "./ReusableComponent/Modal";
+import useModal from "../hooks/useModal";
 import { API_BASE_URL } from "../config";
 
 export default function Live() {
+  // modal
+  const { modal, hideModal, showError, showSuccess } = useModal();
+
   // ---- auth ----
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
@@ -78,7 +83,13 @@ export default function Live() {
       console.error("Speech recognition error:", e.error || e);
       setListening(false);
       if (e.error === "not-allowed") {
-        toast.error("Microphone permission blocked.");
+        showError("Microphone permission blocked. Please allow microphone access to use live transcription.");
+      } else if (e.error === "no-speech") {
+        showError("No speech detected. Please try speaking again.");
+      } else if (e.error === "audio-capture") {
+        showError("Microphone not found. Please check your microphone connection.");
+      } else {
+        showError("Speech recognition error. Please try again.");
       }
     };
 
@@ -114,7 +125,7 @@ export default function Live() {
   const startListening = () => {
     const rec = recognitionRef.current;
     if (!rec) {
-      toast.error("Your browser does not support Speech Recognition.");
+      showError("Your browser does not support Speech Recognition. Please use Chrome or Edge for the best experience.");
       return;
     }
     if (!listening) {
@@ -124,7 +135,7 @@ export default function Live() {
         setListening(true);
       } catch (e) {
         console.error(e);
-        toast.error("Could not start listening.");
+        showError("Could not start listening. Please try again.");
       }
     }
   };
@@ -157,7 +168,7 @@ export default function Live() {
   const saveToHistory = async () => {
     const text = (transcript + " " + interim).trim();
     if (!text) {
-      toast.error("⚠️ Nothing to save. Speak something first.");
+      showError("Nothing to save. Please speak something first to create a transcription.");
       return;
     }
     setSaving(true);
@@ -167,10 +178,10 @@ export default function Live() {
         { transcription: text },
         { withCredentials: true }
       );
-      toast.success("✅ Saved to history!");
+      showSuccess("Transcription saved to history successfully!");
     } catch (err) {
       console.error("Save failed", err);
-      toast.error("❌ Failed to save transcription");
+      showError("Failed to save transcription. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -193,7 +204,7 @@ export default function Live() {
             </p>
             <a
               href={`${API_BASE_URL}/auth/google`}
-              className="inline-block px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 border border-white/10"
+              className="btn-ghost"
             >
               Sign in with Google
             </a>
@@ -241,40 +252,54 @@ export default function Live() {
               <button
                 onClick={startListening}
                 disabled={listening}
-                className="px-4 py-2 rounded-md bg-green-600 hover:bg-green-500 disabled:opacity-50"
+                className="btn-success"
               >
-                Start
+                ▶️ Start
               </button>
               <button
                 onClick={stopListening}
                 disabled={!listening}
-                className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-500 disabled:opacity-50"
+                className="btn-danger"
               >
-                Stop
+                ⏹️ Stop
               </button>
               <button
                 onClick={clearTranscript}
-                className="px-4 py-2 rounded-md bg-yellow-600 hover:bg-yellow-500"
+                className="btn-warning"
               >
-                Clear
+                🗑️ Clear
               </button>
               <button
                 onClick={copyToClipboard}
-                className="px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-600"
+                className="btn-secondary"
               >
-                Copy
+                📋 Copy
               </button>
               <button
                 onClick={saveToHistory}
                 disabled={saving}
-                className="px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-500 disabled:opacity-50"
+                className="btn-primary"
               >
-                {saving ? "Saving…" : "Save to History"}
+                {saving ? "💾 Saving…" : "💾 Save to History"}
               </button>
             </div>
           </motion.section>
         )}
       </main>
+
+      {/* Modal */}
+      <Modal
+        isOpen={modal.isOpen}
+        onClose={hideModal}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        confirmText={modal.confirmText}
+        cancelText={modal.cancelText}
+        onConfirm={modal.onConfirm}
+        showCancel={modal.showCancel}
+        showConfirm={modal.showConfirm}
+      />
     </div>
   );
 }

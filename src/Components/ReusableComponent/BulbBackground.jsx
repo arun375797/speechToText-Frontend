@@ -1,67 +1,68 @@
 import { useMemo } from "react";
 
-/** tiny deterministic rng so bulbs don't reshuffle on every render */
-function rng(seed) {
-  let t = seed + 1;
-  return () => (t = Math.imul(48271, t) % 0x7fffffff) / 0x7fffffff;
-}
-
 /**
- * Glowing bulbs that drift/pulse gently.
- * - fixed, pointer-events-none, z-0 (content sits above at z-10)
- * - mix-blend: screen to glow on black
+ * Large flowing gradient areas that create ambient lighting
+ * Similar to Code Vault's style with large diffused color zones
  */
-export default function BulbBackground({ count = 14, seed = 7 }) {
-  const bulbs = useMemo(() => {
-    const r = rng(seed);
-    const palette = [
-      "#6366F1", // indigo-500
-      "#A855F7", // purple-500
-      "#22D3EE", // cyan-400
-      "#F472B6", // pink-400
-      "#F59E0B", // amber-500
-      "#10B981", // emerald-500
-      "#60A5FA", // blue-400
-    ];
-    // fewer bulbs on small screens for perf
-    const isSmall =
-      typeof window !== "undefined" &&
-      window.matchMedia("(max-width: 640px)").matches;
-    const n = isSmall ? Math.max(8, Math.floor(count * 0.6)) : count;
-
-    return Array.from({ length: n }, (_, i) => ({
-      top: 5 + r() * 90,      // % of viewport
-      left: 5 + r() * 90,     // % of viewport
-      size: 70 + r() * 150,   // px
-      color: palette[i % palette.length],
-      dur: 18 + r() * 16,     // seconds
-      delay: -r() * 20,       // negative delay to desync starts
-      tx: (r() * 40 - 20) + "px", // small wander vector
-      ty: (r() * 40 - 20) + "px",
-    }));
-  }, [count, seed]);
+export default function BulbBackground() {
+  const gradients = useMemo(() => [
+    {
+      id: 'gradient-1',
+      position: 'top-left',
+      colors: ['#22D3EE', '#06B6D4'], // cyan-400 to cyan-500
+      size: '400px',
+      blur: '120px',
+      animation: 'float-1'
+    },
+    {
+      id: 'gradient-2', 
+      position: 'bottom-left',
+      colors: ['#10B981', '#059669'], // emerald-500 to emerald-600
+      size: '350px',
+      blur: '100px',
+      animation: 'float-2'
+    },
+    {
+      id: 'gradient-3',
+      position: 'top-right', 
+      colors: ['#A855F7', '#9333EA'], // purple-500 to purple-600
+      size: '380px',
+      blur: '110px',
+      animation: 'float-3'
+    },
+    {
+      id: 'gradient-4',
+      position: 'bottom-right',
+      colors: ['#F472B6', '#EC4899'], // pink-400 to pink-500
+      size: '320px',
+      blur: '90px',
+      animation: 'float-4'
+    },
+    {
+      id: 'gradient-5',
+      position: 'center',
+      colors: ['#6366F1', '#4F46E5'], // indigo-500 to indigo-600
+      size: '300px',
+      blur: '80px',
+      animation: 'float-5'
+    }
+  ], []);
 
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-      {bulbs.map((b, i) => (
-        <span
-          key={i}
-          className="bulb"
+      {gradients.map((gradient) => (
+        <div
+          key={gradient.id}
+          className={`gradient-orb gradient-${gradient.position} ${gradient.animation}`}
           style={{
-            top: `${b.top}%`,
-            left: `${b.left}%`,
-            width: `${b.size}px`,
-            height: `${b.size}px`,
-            "--bulb-color": b.color,
-            "--dur": `${b.dur}s`,
-            animationDelay: `${b.delay}s`,
-            "--tx": b.tx,
-            "--ty": b.ty,
+            '--gradient-colors': gradient.colors.join(', '),
+            '--orb-size': gradient.size,
+            '--blur-amount': gradient.blur,
           }}
         />
       ))}
-      {/* gentle vignette so UI stays readable */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0)_0,rgba(0,0,0,0)_60%,rgba(0,0,0,.6)_100%)]" />
+      {/* Subtle overlay to ensure content readability */}
+      <div className="absolute inset-0 bg-black/20" />
     </div>
   );
 }

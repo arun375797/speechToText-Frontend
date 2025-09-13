@@ -47,7 +47,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white px-6">
+    <div className="min-h-screen flex flex-col items-center justify-center text-white px-6">
       <h1 className="text-4xl font-extrabold mb-3">🎙️ Speech-to-Text App</h1>
       <p className="mb-8 text-lg opacity-90 text-center max-w-md">
         Sign in with Google to upload audio and convert it to text.

@@ -83,7 +83,7 @@ export default function History() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
+    <div className="min-h-screen text-white flex flex-col">
       {/* Top bar */}
       <Navbar user={user} setUser={setUser} />
 

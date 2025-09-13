@@ -18,3 +18,37 @@ html, body, #root {
 body {
   overflow-y: scroll;
 }
+
+/* --- Glowing bulbs background --- */
+.bulb{
+  position:absolute;
+  border-radius:9999px;
+  pointer-events:none;
+  background: radial-gradient(circle at 30% 30%, var(--bulb-color) 0%, rgba(0,0,0,0) 60%);
+  mix-blend-mode: screen;
+  opacity:.28;
+  filter: blur(10px);
+  transform: translate(-50%,-50%) translate(var(--tx,0),var(--ty,0)) scale(1);
+  animation:
+    float var(--dur,22s) ease-in-out infinite,
+    pulse calc(var(--dur,22s)*0.55) ease-in-out infinite;
+  will-change: transform, opacity, filter;
+}
+
+@keyframes float{
+  0%   { transform: translate(-50%,-50%) translate(var(--tx,0),var(--ty,0)) scale(1); }
+  25%  { transform: translate(-50%,-50%) translate(calc(var(--tx) + 22px), calc(var(--ty) - 12px)) scale(1.05); }
+  50%  { transform: translate(-50%,-50%) translate(calc(var(--tx) - 10px), calc(var(--ty) + 18px)) scale(0.95); }
+  75%  { transform: translate(-50%,-50%) translate(calc(var(--tx) + 16px), calc(var(--ty) + 6px)) scale(1.04); }
+  100% { transform: translate(-50%,-50%) translate(var(--tx,0),var(--ty,0)) scale(1); }
+}
+
+@keyframes pulse{
+  0%,100% { opacity:.20; filter: blur(10px); }
+  50%     { opacity:.36; filter: blur(14px); }
+}
+
+/* Respect accessibility */
+@media (prefers-reduced-motion: reduce){
+  .bulb{ animation: none; }
+}

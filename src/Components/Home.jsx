@@ -176,7 +176,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
+    <div className="min-h-screen text-white flex flex-col">
       {/* Top Navbar always mounted so avatar/logout can appear as soon as session arrives */}
       <Navbar user={user} setUser={setUser} />
 
@@ -209,7 +209,7 @@ export default function Home() {
           <motion.div layout className="flex flex-1">
             {/* Sidebar (History) */}
             <aside
-              className={`fixed top-0 left-0 h-full w-72 bg-gray-900 border-r border-gray-800 transform ${
+              className={`fixed top-0 left-0 h-full w-72 bg-gray-900/80 backdrop-blur-sm border-r border-gray-800 transform ${
                 sidebarOpen ? "translate-x-0" : "-translate-x-full"
               } transition-transform duration-300 z-40 pt-16`}
             >
@@ -243,7 +243,7 @@ export default function Home() {
             <section className="flex-1 flex flex-col items-center p-6 w-full">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="self-start mb-6 flex items-center space-x-2 bg-gray-800 px-3 py-2 rounded-md border border-gray-700 hover:bg-gray-700"
+                className="self-start mb-6 flex items-center space-x-2 bg-gray-800/60 backdrop-blur-sm px-3 py-2 rounded-md border border-gray-700 hover:bg-gray-700/60"
               >
                 <Menu size={18} /> <span>Show History</span>
               </button>
@@ -256,7 +256,7 @@ export default function Home() {
                 with AI.
               </p>
 
-              <div className="bg-gray-900 p-8 rounded-2xl shadow-lg w-full max-w-lg border border-gray-700">
+              <div className="bg-gray-900/60 backdrop-blur-sm p-8 rounded-2xl shadow-lg w-full max-w-lg border border-gray-700">
                 <h2 className="text-xl font-semibold mb-4">Upload Audio</h2>
 
                 {/* Language Selector */}
@@ -301,7 +301,7 @@ export default function Home() {
 
               {/* Latest Transcription */}
               {transcription && (
-                <div className="mt-8 bg-gray-900 p-6 rounded-xl shadow-md w-full max-w-lg border border-gray-700">
+                <div className="mt-8 bg-gray-900/60 backdrop-blur-sm p-6 rounded-xl shadow-md w-full max-w-lg border border-gray-700">
                   <h2 className="text-lg font-semibold mb-3">
                     ✨ Latest Transcription
                   </h2>

@@ -7,6 +7,7 @@ import Live from "./Components/Live.jsx";
 import History from "./Components/History.jsx";
 import ProtectedRoute from "./Components/ProtectedRoute.jsx";
 import Navbar from "./Components/ReusableComponent/Navbar.jsx";
+import BulbBackground from "./Components/ReusableComponent/BulbBackground.jsx";
 import { Toaster } from "react-hot-toast";
 
 const page = {
@@ -23,8 +24,13 @@ export default function App() {
   return (
     <>
       <Toaster position="top-right" toastOptions={{ style: { background: "#333", color: "#fff" } }} />
-      <div className="min-h-screen bg-black">
-        {hasNavbar && <Navbar />}          {/* fixed header */}
+      
+      {/* base layer */}
+      <div className="min-h-screen relative bg-black text-white">
+        <BulbBackground />                 {/* <-- new global background */}
+
+        {hasNavbar && <Navbar />}          {/* fixed header (z-50) */}
+
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={location.pathname}
@@ -33,7 +39,7 @@ export default function App() {
             animate="animate"
             exit="exit"
             transition={transition}
-            className={hasNavbar ? "pt-16" : ""}   // always reserve space for navbar
+            className={(hasNavbar ? "pt-16 " : "") + "relative z-10"}  // <-- sit above bulbs
           >
             <Routes location={location}>
               <Route path="/" element={<Login />} />

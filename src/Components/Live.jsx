@@ -178,7 +178,7 @@ export default function Live() {
 
   // UI
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
+    <div className="min-h-screen text-white flex flex-col">
       {/* Always mount the Navbar so avatar/logout show as soon as session arrives */}
       <Navbar user={user} setUser={setUser} />
 

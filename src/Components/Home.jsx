@@ -195,7 +195,7 @@ export default function Home() {
       {/* Top Navbar always mounted so avatar/logout can appear as soon as session arrives */}
       <Navbar user={user} setUser={setUser} />
 
-      <main className="pt-20 flex-1 flex">
+      <main className="pt-20 flex-1 flex pb-8">
         {/* If we’re still determining session */}
         {loadingUser ? (
           <div className="w-full flex items-center justify-center">
@@ -205,16 +205,21 @@ export default function Home() {
           // Not logged in → CTA
           <div className="w-full flex items-center justify-center px-6">
             <div className="max-w-md text-center">
-              <h1 className="text-3xl font-extrabold mb-4">
+              <h1 className="text-4xl font-extrabold mb-4 text-gradient">
                 🎙️ Speech-to-Text Converter
               </h1>
-              <p className="text-gray-400 mb-6">
+              <p className="text-slate-400 mb-8 text-lg">
                 Sign in to upload audio, transcribe, and view your history.
               </p>
               <a
                 href={`${API_BASE_URL}/auth/google`}
-                className="btn-ghost"
+                className="btn-google btn-lg"
               >
+                <img
+                  src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                  alt="Google"
+                  className="w-5 h-5 mr-3"
+                />
                 Sign in with Google
               </a>
             </div>
@@ -224,12 +229,12 @@ export default function Home() {
           <motion.div layout className="flex flex-1">
             {/* Sidebar (History) */}
             <aside
-              className={`fixed top-0 left-0 h-full w-72 bg-gray-900/80 backdrop-blur-sm border-r border-gray-800 transform ${
+              className={`fixed top-0 left-0 h-full w-72 card backdrop-blur-sm border-r border-slate-600/30 transform ${
                 sidebarOpen ? "translate-x-0" : "-translate-x-full"
               } transition-transform duration-300 z-40 pt-16`}
             >
-              <div className="p-4 border-b border-gray-800 flex justify-between items-center">
-                <h2 className="text-lg font-semibold">📝 History</h2>
+              <div className="p-4 border-b border-slate-600/30 flex justify-between items-center">
+                <h2 className="text-lg font-semibold text-slate-200">📝 History</h2>
                 <button
                   onClick={() => setSidebarOpen(false)}
                   className="btn-icon"
@@ -263,22 +268,22 @@ export default function Home() {
                 <Menu size={18} /> <span>Show History</span>
               </button>
 
-              <h1 className="text-3xl font-extrabold mb-4">
+              <h1 className="text-4xl font-extrabold mb-4 text-gradient">
                 🎙️ Speech-to-Text Converter
               </h1>
-              <p className="text-gray-400 mb-8 text-center max-w-xl">
+              <p className="text-slate-400 mb-8 text-center max-w-xl text-lg">
                 Upload or record your audio and convert it into text instantly
                 with AI.
               </p>
 
-              <div className="bg-gray-900/60 backdrop-blur-sm p-8 rounded-2xl shadow-lg w-full max-w-lg border border-gray-700">
-                <h2 className="text-xl font-semibold mb-4">Upload Audio</h2>
+              <div className="card card-hover p-8 w-full max-w-lg">
+                <h2 className="text-xl font-semibold mb-6 text-slate-200">Upload Audio</h2>
 
                 {/* Language Selector */}
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="mb-4 w-full p-2 rounded-lg bg-gray-800 text-gray-200 border border-gray-600 focus:outline-none"
+                  className="mb-4 w-full p-3 rounded-xl bg-slate-800/60 text-slate-200 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm"
                 >
                   <option value="auto">🌍 Auto Detect</option>
                   <option value="en">English</option>
@@ -298,9 +303,15 @@ export default function Home() {
 
                 {/* Show Duration & Cost */}
                 {duration > 0 && (
-                  <div className="mb-4 text-gray-300">
-                    <p>Duration: {formatDuration(duration)}</p>
-                    <p>Estimated Cost: ₹{cost.toFixed(2)}</p>
+                  <div className="mb-6 p-4 bg-slate-800/40 rounded-xl border border-slate-600/30">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-slate-300">Duration:</span>
+                      <span className="text-emerald-400 font-semibold">{formatDuration(duration)}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm mt-1">
+                      <span className="text-slate-300">Estimated Cost:</span>
+                      <span className="text-cyan-400 font-semibold">₹{cost.toFixed(2)}</span>
+                    </div>
                   </div>
                 )}
 
@@ -308,7 +319,7 @@ export default function Home() {
                 <button
                   onClick={handleUpload}
                   disabled={loading}
-                  className="btn-primary w-full"
+                  className="btn btn-primary w-full btn-lg"
                 >
                   {loading ? "⏳ Transcribing..." : "🚀 Upload & Transcribe"}
                 </button>
@@ -316,16 +327,18 @@ export default function Home() {
 
               {/* Latest Transcription */}
               {transcription && (
-                <div className="mt-8 bg-gray-900/60 backdrop-blur-sm p-6 rounded-xl shadow-md w-full max-w-lg border border-gray-700">
-                  <h2 className="text-lg font-semibold mb-3">
+                <div className="mt-8 card card-hover p-6 w-full max-w-lg">
+                  <h2 className="text-lg font-semibold mb-4 text-slate-200 flex items-center">
                     ✨ Latest Transcription
                   </h2>
-                  <p className="text-gray-200 mb-2">{transcription}</p>
+                  <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-600/30">
+                    <p className="text-slate-200 leading-relaxed">{transcription}</p>
+                  </div>
                   {duration > 0 && (
-                    <p className="text-gray-300 text-sm">
-                      Duration: {formatDuration(duration)} | Cost: ₹
-                      {cost.toFixed(2)}
-                    </p>
+                    <div className="mt-4 flex justify-between items-center text-sm text-slate-400">
+                      <span>Duration: {formatDuration(duration)}</span>
+                      <span>Cost: ₹{cost.toFixed(2)}</span>
+                    </div>
                   )}
                 </div>
               )}

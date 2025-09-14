@@ -198,14 +198,19 @@ export default function Live() {
           <div className="text-gray-400 mt-10">Checking session…</div>
         ) : !user ? (
           <div className="max-w-md w-full text-center mt-10">
-            <h1 className="text-3xl font-extrabold mb-4">🎙️ Live Transcription</h1>
-            <p className="text-gray-400 mb-6">
+            <h1 className="text-4xl font-extrabold mb-4 text-gradient">🎙️ Live Transcription</h1>
+            <p className="text-slate-400 mb-8 text-lg">
               Sign in to use live speech recognition and save transcripts.
             </p>
             <a
               href={`${API_BASE_URL}/auth/google`}
-              className="btn-ghost"
+              className="btn btn-google btn-lg"
             >
+              <img
+                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                alt="Google"
+                className="w-5 h-5 mr-3"
+              />
               Sign in with Google
             </a>
           </div>
@@ -214,21 +219,21 @@ export default function Live() {
             layout
             className="w-full max-w-3xl mt-6 flex flex-col items-stretch"
           >
-            <h1 className="text-3xl font-extrabold mb-2">🎙️ Live Transcription</h1>
-            <p className="text-gray-400 mb-6">
+            <h1 className="text-4xl font-extrabold mb-4 text-gradient">🎙️ Live Transcription</h1>
+            <p className="text-slate-400 mb-8 text-lg">
               Speak into your microphone and see the transcription in real time.
               (Chrome desktop recommended. iOS Safari does not support this API.)
             </p>
 
             {/* Language selector */}
-            <div className="mb-4">
-              <label className="block text-sm text-gray-300 mb-2">
+            <div className="mb-6">
+              <label className="block text-sm text-slate-300 mb-3 font-medium">
                 Recognition language
               </label>
               <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
-                className="w-full p-2 rounded-lg bg-gray-800 text-gray-200 border border-gray-600 focus:outline-none"
+                className="w-full p-3 rounded-xl bg-slate-800/60 text-slate-200 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm"
               >
                 <option value="en-US">English (US)</option>
                 <option value="en-IN">English (India)</option>
@@ -240,11 +245,13 @@ export default function Live() {
             </div>
 
             {/* Transcript box */}
-            <div className="bg-gray-900 p-4 rounded-xl border border-gray-700 mb-4 h-56 overflow-y-auto">
-              <p className="whitespace-pre-wrap">
-                {transcript}
-                <span className="opacity-50">{interim}</span>
-              </p>
+            <div className="card card-hover p-6 mb-6 h-64 overflow-y-auto">
+              <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-600/30 h-full">
+                <p className="whitespace-pre-wrap text-slate-200 leading-relaxed">
+                  {transcript}
+                  <span className="opacity-50 text-slate-400">{interim}</span>
+                </p>
+              </div>
             </div>
 
             {/* Controls */}
@@ -252,33 +259,33 @@ export default function Live() {
               <button
                 onClick={startListening}
                 disabled={listening}
-                className="btn-success"
+                className="btn btn-success"
               >
                 ▶️ Start
               </button>
               <button
                 onClick={stopListening}
                 disabled={!listening}
-                className="btn-danger"
+                className="btn btn-danger"
               >
                 ⏹️ Stop
               </button>
               <button
                 onClick={clearTranscript}
-                className="btn-warning"
+                className="btn btn-warning"
               >
                 🗑️ Clear
               </button>
               <button
                 onClick={copyToClipboard}
-                className="btn-secondary"
+                className="btn btn-secondary"
               >
                 📋 Copy
               </button>
               <button
                 onClick={saveToHistory}
                 disabled={saving}
-                className="btn-primary"
+                className="btn btn-primary"
               >
                 {saving ? "💾 Saving…" : "💾 Save to History"}
               </button>

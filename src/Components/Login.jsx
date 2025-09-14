@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import axios from "axios";
 import { API_BASE_URL } from "../config";
 
@@ -48,23 +49,45 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-white px-6">
-      <h1 className="text-4xl font-extrabold mb-3">🎙️ Speech-to-Text App</h1>
-      <p className="mb-8 text-lg opacity-90 text-center max-w-md">
-        Sign in with Google to upload audio and convert it to text.
-      </p>
-
-      <button
-        onClick={startGoogleLogin}
-        className="btn-google"
-        disabled={checking}
+      <motion.div 
+        className="text-center max-w-md"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
       >
-        <img
-          src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-          alt="Google"
-          className="w-6 h-6 mr-3"
-        />
-        {checking ? "Checking session…" : "Sign in with Google"}
-      </button>
+        <h1 className="text-5xl font-extrabold mb-4 text-gradient">
+          🎙️ SpeechAI
+        </h1>
+        <p className="mb-8 text-xl text-slate-400 leading-relaxed">
+          Professional speech-to-text solutions powered by advanced AI technology.
+        </p>
+
+        <button
+          onClick={startGoogleLogin}
+          className="btn btn-google btn-xl"
+          disabled={checking}
+        >
+          <img
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+            alt="Google"
+            className="w-6 h-6 mr-3"
+          />
+          {checking ? "Checking session…" : "Sign in with Google"}
+        </button>
+
+        {/* Sign Up Link */}
+        <div className="mt-6 text-center">
+          <p className="text-slate-400">
+            Don't have an account?{" "}
+            <Link 
+              to="/signup" 
+              className="text-blue-400 hover:text-blue-300 font-semibold transition-colors duration-300"
+            >
+              Create Account
+            </Link>
+          </p>
+        </div>
+      </motion.div>
 
       {/* Warmup hint + no-JS fallback */}
       <div className="mt-4 text-sm opacity-90 text-center">

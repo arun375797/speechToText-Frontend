@@ -104,7 +104,7 @@ export default function History() {
 
       {/* Page content */}
       <main className="pt-20 px-4 sm:px-6 pb-10 w-full flex flex-col items-center">
-        <h1 className="text-3xl font-extrabold mb-6 text-center">
+        <h1 className="text-4xl font-extrabold mb-8 text-center text-gradient">
           📝 Transcription History
         </h1>
 
@@ -114,13 +114,18 @@ export default function History() {
         ) : !user ? (
           // Not logged in
           <div className="text-center">
-            <p className="text-gray-300 mb-4">
-              You’re not signed in. Please sign in to view your history.
+            <p className="text-slate-300 mb-6 text-lg">
+              You're not signed in. Please sign in to view your history.
             </p>
             <a
               href={`${API_BASE_URL}/auth/google`}
-              className="btn-ghost"
+              className="btn btn-google btn-lg"
             >
+              <img
+                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                alt="Google"
+                className="w-5 h-5 mr-3"
+              />
               Sign in with Google
             </a>
           </div>

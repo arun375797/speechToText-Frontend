@@ -9,41 +9,41 @@ export default function BulbBackground() {
     {
       id: 'gradient-1',
       position: 'top-left',
-      colors: ['#22D3EE', '#06B6D4'], // cyan-400 to cyan-500
-      size: '400px',
-      blur: '120px',
+      colors: ['#3B82F6', '#1D4ED8'], // Professional blue gradient
+      size: '450px',
+      blur: '140px',
       animation: 'float-1'
     },
     {
       id: 'gradient-2', 
       position: 'bottom-left',
-      colors: ['#10B981', '#059669'], // emerald-500 to emerald-600
-      size: '350px',
-      blur: '100px',
+      colors: ['#10B981', '#047857'], // Professional emerald gradient
+      size: '400px',
+      blur: '120px',
       animation: 'float-2'
     },
     {
       id: 'gradient-3',
       position: 'top-right', 
-      colors: ['#A855F7', '#9333EA'], // purple-500 to purple-600
-      size: '380px',
-      blur: '110px',
+      colors: ['#8B5CF6', '#7C3AED'], // Professional violet gradient
+      size: '420px',
+      blur: '130px',
       animation: 'float-3'
     },
     {
       id: 'gradient-4',
       position: 'bottom-right',
-      colors: ['#F472B6', '#EC4899'], // pink-400 to pink-500
-      size: '320px',
-      blur: '90px',
+      colors: ['#06B6D4', '#0891B2'], // Professional cyan gradient
+      size: '380px',
+      blur: '110px',
       animation: 'float-4'
     },
     {
       id: 'gradient-5',
       position: 'center',
-      colors: ['#6366F1', '#4F46E5'], // indigo-500 to indigo-600
-      size: '300px',
-      blur: '80px',
+      colors: ['#6366F1', '#4F46E5'], // Professional indigo gradient
+      size: '350px',
+      blur: '100px',
       animation: 'float-5'
     }
   ], []);

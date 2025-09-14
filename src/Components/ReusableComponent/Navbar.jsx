@@ -37,6 +37,7 @@ export default function Navbar() {
     { to: "/home", label: "📂 Upload & Transcribe" },
     { to: "/live", label: "🎧 Live" },
     { to: "/history", label: "📜 History" },
+    { to: "/profile", label: "👤 Profile" },
   ];
 
   const handleLogout = async () => {

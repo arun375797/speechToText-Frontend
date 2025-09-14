@@ -5,6 +5,7 @@ import axios from "axios";
 import { Eye, EyeOff, User, Mail, Lock, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 import { API_BASE_URL } from "../config";
+import OTPVerification from "./OTPVerification";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -17,6 +18,9 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showOTPVerification, setShowOTPVerification] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [userName, setUserName] = useState("");
 
   const handleChange = (e) => {
     setFormData({
@@ -63,8 +67,10 @@ export default function Signup() {
       });
 
       if (response.data.success) {
-        toast.success("Account created successfully! Please sign in.");
-        navigate("/");
+        toast.success("Account created successfully! Please check your email for verification code.");
+        setUserEmail(formData.email.trim().toLowerCase());
+        setUserName(formData.name.trim());
+        setShowOTPVerification(true);
       }
     } catch (error) {
       console.error("Signup error:", error);
@@ -74,6 +80,23 @@ export default function Signup() {
       setLoading(false);
     }
   };
+
+  const handleBackToSignup = () => {
+    setShowOTPVerification(false);
+    setUserEmail("");
+    setUserName("");
+  };
+
+  // Show OTP verification if needed
+  if (showOTPVerification) {
+    return (
+      <OTPVerification 
+        userEmail={userEmail}
+        userName={userName}
+        onBack={handleBackToSignup}
+      />
+    );
+  }
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },

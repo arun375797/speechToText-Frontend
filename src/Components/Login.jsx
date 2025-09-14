@@ -95,6 +95,9 @@ export default function Login() {
       if (response.data.success) {
         toast.success("Login successful!");
         navigate("/home");
+      } else if (response.data.requiresVerification) {
+        toast.error(response.data.message);
+        // You could redirect to OTP verification page here if needed
       } else {
         toast.error(response.data.message || "Login failed");
       }

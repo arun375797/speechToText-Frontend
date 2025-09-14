@@ -37,7 +37,7 @@ export default function Profile() {
   const fetchProfileData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_BASE_URL}/api/profile`, {
+      const response = await axios.get(`${API_BASE_URL}/auth/profile`, {
         withCredentials: true
       });
       setProfileData(response.data);
@@ -59,7 +59,7 @@ export default function Profile() {
 
   const handleSave = async () => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/api/profile`, editForm, {
+      const response = await axios.put(`${API_BASE_URL}/auth/profile`, editForm, {
         withCredentials: true
       });
       

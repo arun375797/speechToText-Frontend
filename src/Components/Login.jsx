@@ -135,7 +135,7 @@ export default function Login() {
           {/* <h2 className="text-2xl font-semibold text-slate-200 mb-6">Sign In</h2> */}
           
           {/* Email */}
-          <div>
+          {/* <div>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
               <input
@@ -151,10 +151,10 @@ export default function Login() {
               />
             </div>
             {loginErrors.email && <p className="text-red-400 text-sm mt-2 text-left">{loginErrors.email}</p>}
-          </div>
+          </div> */}
 
           {/* Password */}
-          <div>
+          {/* <div>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
               <input
@@ -177,7 +177,7 @@ export default function Login() {
               </button>
             </div>
             {loginErrors.password && <p className="text-red-400 text-sm mt-2 text-left">{loginErrors.password}</p>}
-          </div>
+          </div> */}
 
           {/* <button
             type="submit"

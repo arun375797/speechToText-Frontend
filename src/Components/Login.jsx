@@ -132,7 +132,7 @@ export default function Login() {
 
         {/* Email/Password Login Form */}
         <form onSubmit={handleEmailLogin} className="space-y-5 mb-6">
-          <h2 className="text-2xl font-semibold text-slate-200 mb-6">Sign In</h2>
+          {/* <h2 className="text-2xl font-semibold text-slate-200 mb-6">Sign In</h2> */}
           
           {/* Email */}
           <div>
@@ -179,24 +179,24 @@ export default function Login() {
             {loginErrors.password && <p className="text-red-400 text-sm mt-2 text-left">{loginErrors.password}</p>}
           </div>
 
-          <button
+          {/* <button
             type="submit"
             className="btn btn-primary w-full btn-lg"
             disabled={loginLoading || checking}
           >
             {loginLoading ? "Signing In..." : "Sign In"}
-          </button>
+          </button> */}
         </form>
 
         {/* Divider */}
-        <div className="relative my-6">
+        {/* <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-slate-600"></div>
           </div>
           <div className="relative flex justify-center text-sm">
             <span className="px-4 bg-slate-900 text-slate-400">Or continue with</span>
           </div>
-        </div>
+        </div> */}
 
         {/* Google Login */}
         <button
@@ -213,7 +213,7 @@ export default function Login() {
         </button>
 
         {/* Sign Up Link */}
-        <div className="mt-6 text-center">
+        {/* <div className="mt-6 text-center">
           <p className="text-slate-400">
             Don't have an account?{" "}
             <Link 
@@ -223,7 +223,7 @@ export default function Login() {
               Create Account
             </Link>
           </p>
-        </div>
+        </div> */}
       </motion.div>
 
       {/* Warmup hint + no-JS fallback */}
